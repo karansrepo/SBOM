@@ -117,7 +117,7 @@ This project is a natural extension of prior work: a Judge0-based code execution
                                     Postgres (builds, SBOM, CVEs, signatures)
                                                      │
                                                      ▼
-                                    Dashboard (React/Vue + Flask/Node API)
+                                    Dashboard (React/Vue + Node.js API)
 ```
 
 ---
@@ -153,7 +153,7 @@ Postgres is used (over a document store) because the data is inherently relation
 | Signing | cosign (Sigstore, keyless) |
 | Policy enforcement | Kyverno (on kind/minikube) |
 | Database | PostgreSQL |
-| Backend API | Flask or Node.js |
+| Backend API | Node.js built-in `http` module |
 | Frontend | React or Vue.js |
 
 ---
@@ -164,7 +164,7 @@ Postgres is used (over a document store) because the data is inherently relation
 |---|---|---|---|
 | 1 | Research SLSA, Syft, Trivy/Grype, cosign; pick demo app | Pitch problem & scope | ✅ Done |
 | 2 | Design pipeline architecture; base GitHub Actions build+push workflow | — | ✅ Done (push/verify pending) |
-| 3 | Add Syft SBOM step; add Trivy/Grype scan gate | Review SBOM/scan output | Not started |
+| 3 | Add Syft SBOM step; add Trivy/Grype scan gate | Review SBOM/scan output | Implemented locally; CI verification pending |
 | 4 | Add cosign keyless signing; verify manually end-to-end | — | Not started |
 | 5 | Stand up kind/minikube cluster; install Kyverno | — | Not started |
 | 6 | Write `imageVerify` ClusterPolicy; test signed vs. unsigned images | — | Not started |
@@ -180,17 +180,22 @@ Postgres is used (over a document store) because the data is inherently relation
 
 **Week 1 — complete**
 - Researched SLSA levels, Syft, Trivy/Grype, and cosign/Sigstore keyless signing.
-- Confirmed demo app: a minimal Flask "hello world," chosen to match existing skills and keep the app itself a non-issue for the project.
+- Confirmed demo app: a minimal Node.js HTTP service using the built-in `http` module, keeping the app itself a non-issue for the project.
 - Collected curated learning resources — video explainers and official quickstart docs for each unfamiliar tool (§14.2).
 - Prepared mentor talking points per tool: the problem it solves, where it sits in the pipeline, how the problem was identified, and a supporting academic citation (§14.3).
 
 **Week 2 — complete (push/verify pending on your end)**
 - Wrote the architecture note: full six-stage pipeline diagram with only *Build* and *Push* marked in-scope for this week, and explicit reasoning for deferring SBOM/scan/sign/policy to later weeks.
 - Locked in three decisions: GHCR over Docker Hub (uses the workflow's built-in `GITHUB_TOKEN`, no extra secret to manage), commit-SHA image tagging instead of `:latest` (anticipating the Week 6 Kyverno policy), and a single-stage Dockerfile with hardening deferred to Week 9.
-- Implemented and delivered: `Dockerfile`, `app.py`, `requirements.txt` for the demo app, and `.github/workflows/build.yml` — a bare-bones workflow that builds the image and pushes it to GHCR tagged with the commit SHA.
+- Implemented and delivered: `Dockerfile`, `app.js`, `package.json`, and `.github/workflows/build.yml` — a workflow that builds the image and pushes it to GHCR tagged with the commit SHA.
 - Outstanding: push to the actual repo, confirm the Action run goes green, confirm the image lands in the repo's Packages tab.
 
-**Weeks 3–13 — not started.**
+**Week 3 — implemented locally; verification pending**
+- Added an SPDX SBOM generation and artifact upload before a critical-severity scan gate.
+- The GHCR push runs only after the scan passes; an Actions run is still needed to verify artifact download and registry behavior.
+- A vulnerable-dependency gate demonstration has not been run.
+
+**Weeks 4–13 — not started.**
 
 ---
 

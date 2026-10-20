@@ -1,4 +1,4 @@
-name: Build and Push Demo Image
+name: Build, Scan, and Push Demo Image
 
 on:
   push:
@@ -9,10 +9,9 @@ on:
 permissions:
   contents: read
   packages: write
-  id-token: write
 
 jobs:
-  build-and-push:
+  build-scan-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,9 +27,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
 
       - name: Build image
         uses: docker/build-push-action@v7
@@ -60,12 +56,4 @@ jobs:
           severity-cutoff: critical
 
       - name: Push image
-        id: push
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository_owner }}/supplychainguard-demo:${{ github.sha }}
-
-      - name: Sign image
-        run: cosign sign --yes ghcr.io/${{ github.repository_owner }}/supplychainguard-demo@${{ steps.push.outputs.digest }}
+        run: docker push ghcr.io/${{ github.repository_owner }}/supplychainguard-demo:${{ github.sha }}
