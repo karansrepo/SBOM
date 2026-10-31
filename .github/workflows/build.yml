@@ -57,6 +57,8 @@ jobs:
         uses: anchore/scan-action@v7
         with:
           sbom: sbom.spdx.json
+          output-format: json
+          output-file: grype-report.json
           severity-cutoff: critical
 
       - name: Push image
@@ -69,3 +71,10 @@ jobs:
 
       - name: Sign image
         run: cosign sign --yes ghcr.io/${{ github.repository_owner }}/supplychainguard-demo@${{ steps.push.outputs.digest }}
+
+      - name: Attest Grype scan
+        run: >-
+          cosign attest --yes
+          --predicate grype-report.json
+          --type https://github.com/karansrepo/SBOM/attestations/grype-scan/v1
+          ghcr.io/${{ github.repository_owner }}/supplychainguard-demo@${{ steps.push.outputs.digest }}
