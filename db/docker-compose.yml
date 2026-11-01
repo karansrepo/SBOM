@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: supplychainguard-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-supplychainguard}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?export POSTGRES_PASSWORD before starting}
+      LOADER_PASSWORD: ${LOADER_PASSWORD:?export LOADER_PASSWORD before starting}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:?export DASHBOARD_PASSWORD before starting}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - supplychainguard-postgres-data:/var/lib/postgresql/data
+      - ./00-create-dashboard-role.sh:/docker-entrypoint-initdb.d/00-create-dashboard-role.sh:ro
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+volumes:
+  supplychainguard-postgres-data:

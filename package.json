@@ -6,6 +6,11 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "dashboard": "node dashboard/server.js",
+    "load-build": "node loader/load.js",
     "test": "node --test"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
   }
 }

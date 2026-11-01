@@ -1,0 +1,3 @@
+-- Data-only seed export.
+-- Generate after loading builds with:
+-- pg_dump --data-only --no-owner --no-privileges "$DATABASE_URL" > db/seed.sql

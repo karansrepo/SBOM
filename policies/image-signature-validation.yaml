@@ -23,9 +23,24 @@ spec:
           identities:
             - subject: "https://github.com/karansrepo/SBOM/.github/workflows/build.yml@refs/heads/main"
               issuer: "https://token.actions.githubusercontent.com"
+  attestations:
+    - name: grypeScan
+      intoto:
+        type: "https://github.com/karansrepo/SBOM/attestations/grype-scan/v1"
   validations:
     - expression: >-
         images.containers.all(img, verifyImageSignatures(img, [attestors.cosign]) > 0)
       message: "Failed to verify the container image signature"
+    - expression: >-
+        images.containers.map(img, verifyAttestationSignatures(img, attestations.grypeScan, [attestors.cosign])).all(result, result > 0)
+      message: "no signed scan attestation"
+    - expression: >-
+        images.containers.map(img,
+          extractPayload(img, attestations.grypeScan).predicate.matches.all(match,
+            match.vulnerability.severity != 'High' &&
+            match.vulnerability.severity != 'Critical')).all(result, result)
+      message: "image contains High or Critical vulnerabilities"
   validationActions:
     - Deny
+  webhookConfiguration:
+    timeoutSeconds: 15
