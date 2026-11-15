@@ -21,7 +21,7 @@ The optional [devcontainer](.devcontainer/devcontainer.json) supplies Docker
 and VS Code integration. It does not replace the GitHub CLI, Cosign, `jq`,
 kind, or Helm installation steps for your operating system.
 
-Clone the repository and install dependencies:
+Clone the repository and install the locked dependencies:
 
 ```bash
 git clone https://github.com/karansrepo/SBOM.git
@@ -32,13 +32,13 @@ npm ci
 The examples use `karansrepo/SBOM`. If you fork the project, replace the
 repository owner and repository name in
 [build.yml](.github/workflows/build.yml),
-[image-signature-validation.yaml](policies/image-signature-validation.yaml),
-and [load.js](loader/load.js) before running the pipeline.
+[image-signature-validation.yaml](policies/image-signature-validation.yaml)
+before running the pipeline. For a different image repository, set
+`IMAGE_REPOSITORY` when running the loader instead of changing its source.
 
 ## Run locally
 
 ```bash
-npm install
 npm start
 ```
 
@@ -278,4 +278,8 @@ and remaining risks.
   status, including the current kind egress blocker.
 
 ## Notes
-This is intentionally minimal and follows YAGNI: Week 4 covers the build, SBOM, critical-severity scan gate, image push, and keyless signing pipeline; Week 5 stands up kind and Kyverno without policies. Manual signature verification and cluster setup are documented above.
+This is intentionally minimal and follows YAGNI: it implements only the
+pipeline, admission controls, loader, dashboard, and evidence needed for the
+demonstration. Manual signature verification and cluster setup are documented
+above; production authentication, high availability, and unrelated policy
+controls remain out of scope.
