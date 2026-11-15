@@ -8,6 +8,33 @@ This repository contains the Week 4 SupplyChainGuard implementation using a mini
 - A Dockerfile for containerizing the demo app.
 - A small Node test to verify the core app behavior.
 
+## Tutorial: prerequisites and setup
+
+Install the following before starting:
+
+- Git and Node.js 22 or newer
+- Docker Engine/Desktop with Docker Compose
+- GitHub CLI (`gh`), Cosign, and `jq`
+- `kubectl`, kind, and Helm for the Kubernetes sections
+
+The optional [devcontainer](.devcontainer/devcontainer.json) supplies Docker
+and VS Code integration. It does not replace the GitHub CLI, Cosign, `jq`,
+kind, or Helm installation steps for your operating system.
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/karansrepo/SBOM.git
+cd SBOM
+npm ci
+```
+
+The examples use `karansrepo/SBOM`. If you fork the project, replace the
+repository owner and repository name in
+[build.yml](.github/workflows/build.yml),
+[image-signature-validation.yaml](policies/image-signature-validation.yaml),
+and [load.js](loader/load.js) before running the pipeline.
+
 ## Run locally
 
 ```bash
@@ -24,6 +51,19 @@ Then visit:
 ```bash
 npm test
 ```
+
+## Tutorial: build, sign, and verify an image
+
+Push a commit to GitHub and open the **Actions** tab. The workflow builds the
+image, generates an SPDX SBOM, fails on Critical findings, pushes the image to
+GHCR, signs the pushed digest, and attaches the Grype report as a signed
+attestation. The workflow only needs the repository's built-in `GITHUB_TOKEN`;
+do not add a personal registry token to the repository.
+
+Copy the digest from the successful **Push image** step. Make the GHCR package
+public for the kind walkthrough, or configure an image pull secret instead.
+Then run the signature and attestation verification commands below. Always
+verify the digest rather than a mutable tag.
 
 ## Verify an image signature
 
@@ -76,9 +116,7 @@ cosign verify-attestation \
   jq -r '.payload' | base64 --decode | jq .
 ```
 
-## Week 5: kind and Kyverno
-
-Install Docker, `kubectl`, `kind`, and Helm. See the [kind installation guide](https://kind.sigs.k8s.io/docs/user/quick-start/) for the platform-specific installation steps.
+## Tutorial: enforce the image in kind and Kyverno
 
 Create the single-node cluster and check that kubectl selected its context:
 
@@ -137,7 +175,21 @@ No admission policies or optional add-ons are installed automatically in Week 5.
 kind delete cluster --name supplychainguard
 ```
 
-## Week 8: Postgres loader and dashboard
+Run the signed-image smoke test after applying the policy:
+
+```bash
+IMAGE="ghcr.io/<owner>/supplychainguard-demo@<digest>"
+kubectl run supplychainguard-demo --image="$IMAGE" --restart=Never
+kubectl wait --for=condition=Ready pod/supplychainguard-demo --timeout=180s
+kubectl logs pod/supplychainguard-demo
+kubectl delete pod supplychainguard-demo
+```
+
+For the negative test, use an unsigned digest or an image with a disallowed
+attestation and confirm that the admission response contains the policy's
+denial message.
+
+## Tutorial: load results into PostgreSQL and view the dashboard
 
 The Week 8 implementation is split into [db/](db/), [loader/](loader/) and
 [dashboard/](dashboard/). It uses Node.js rather than Flask and keeps the
@@ -206,6 +258,24 @@ ORDER BY build_count DESC, c.name;
 
 The last query is the relational reason for using Postgres: it answers which
 components are shared across builds with a direct join/grouping query.
+
+The loader and dashboard are intentionally local and unauthenticated. Do not
+expose port 3001 outside the machine running the tutorial. The database init
+scripts run only when the named volume is first created; remove only that
+specific volume when you need to recreate the schema.
+
+## Architecture and security model
+
+See the [architecture diagram](ARCHITECTURE.md) for the data flow and trust
+boundaries, and the [threat model](THREAT_MODEL.md) for the threats, controls,
+and remaining risks.
+
+## Verification evidence
+
+- [Weeks 2 and 4](evidence/week-2-4.md): Actions, GHCR digest, and cosign
+  certificate verification.
+- [Weeks 5 and 6](evidence/week-5-6.md): cluster state and admission-test
+  status, including the current kind egress blocker.
 
 ## Notes
 This is intentionally minimal and follows YAGNI: Week 4 covers the build, SBOM, critical-severity scan gate, image push, and keyless signing pipeline; Week 5 stands up kind and Kyverno without policies. Manual signature verification and cluster setup are documented above.

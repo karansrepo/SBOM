@@ -1,0 +1,29 @@
+{
+	"name": "SBOM Supply-Chain Development",
+	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:4.1.3": {
+			"version": "latest",
+			"moby": true,
+			"azureDnsAutoDetection": true,
+			"installDockerBuildx": true,
+			"iptablesSwitchAtRuntime": true,
+			"dockerDashComposeVersion": "latest"
+		}
+	},
+	"runArgs": [
+		"--privileged"
+	],
+	"forwardPorts": [
+		3000,
+		3001
+	],
+	"postCreateCommand": "docker version && docker compose version && docker buildx version",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	}
+}
