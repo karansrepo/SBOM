@@ -6,7 +6,7 @@
 **Duration:** 3 months (~5 hrs/week, ~65 hours total)
 **Version:** 1.4
 **Date:** September 2026
-**Last Updated:** November 1, 2026 — Weeks 1–9 implementation complete; live integration evidence pending
+**Last Updated:** November 15, 2026 — Weeks 1–9 implementation complete; T2, T3, T5, and T8 verified
 
 ---
 
@@ -214,9 +214,9 @@ artifact store; the loader verifies them and persists the normalized records.
   before replacing a build's child rows transactionally, and a read-only
   dashboard for build trends, components, and vulnerabilities.
 - *Week 9:* added the frozen test matrix and evidence requirements in
-  `TESTING.md`. Remote GitHub Actions, GHCR, kind, and PostgreSQL execution
-  were unavailable in this environment, so those cases are recorded as
-  `Not run` or `Gap`, not as passing evidence.
+  `TESTING.md`. T2, T3, T5, and T8 were verified against GitHub Actions,
+  GHCR, kind, and PostgreSQL; T6 and T7 remain blocked by missing alternate
+  signing identity and package-write access.
 
 **Weeks 10–13 — remaining project work**
 - *Week 10:* optional SLSA provenance attestation.
@@ -242,9 +242,9 @@ artifact store; the loader verifies them and persists the normalized records.
 ## 11. Success Metrics / Acceptance Criteria
 
 - A pushed commit results in an automatically built, scanned, signed image with zero manual steps.
-- An unsigned image is demonstrably rejected by the cluster (live or recorded demo); this remains pending live cluster evidence.
-- An image with a critical CVE is demonstrably rejected; this remains pending live pipeline and cluster evidence.
-- Dashboard correctly displays SBOM and vulnerability data for at least 5 sample builds; the implementation is ready, but sample-build evidence remains pending.
+- An unsigned image is demonstrably rejected by the cluster (live or recorded demo); verified in the Week 5–6 evidence.
+- An image with a critical CVE is demonstrably rejected; verified by the T2 workflow evidence.
+- Dashboard correctly displays SBOM and vulnerability data for at least 5 sample builds; verified by the T5 evidence.
 - Written threat model clearly states what attack scenarios this pipeline mitigates (tampered images, typosquatted base images, unscanned CVEs reaching production).
 
 ---
