@@ -214,9 +214,8 @@ artifact store; the loader verifies them and persists the normalized records.
   before replacing a build's child rows transactionally, and a read-only
   dashboard for build trends, components, and vulnerabilities.
 - *Week 9:* added the frozen test matrix and evidence requirements in
-  `TESTING.md`. T2, T3, T5, and T8 were verified against GitHub Actions,
-  GHCR, kind, and PostgreSQL; T6 and T7 remain blocked by missing alternate
-  signing identity and package-write access.
+  `TESTING.md`. T2, T3, T5, T6, T7, and T8 were verified against GitHub
+  Actions, GHCR, kind, and PostgreSQL.
 
 **Weeks 10–13 — remaining project work**
 - *Week 10:* optional SLSA provenance attestation.
