@@ -7,6 +7,20 @@ commit to Kubernetes admission. The dashboard and database are local demo
 services, not production deployments. GitHub, GHCR, Sigstore, Docker, kind,
 and Kyverno are assumed to be available and authentic.
 
+## YAGNI boundary
+
+The project implements only the controls needed to demonstrate that path:
+build, SBOM generation and scanning, signing, attestation, admission, loading,
+and local inspection. Each component and stored field must support one of those
+steps or its evidence; new abstractions, configuration knobs, deployment modes,
+and operational services are deferred until a demonstrated requirement needs
+them.
+
+This boundary is intentional, not a production-readiness gap. In particular,
+the local dashboard remains unauthenticated, the database remains
+single-instance, and the workflow keeps one fixed critical-severity gate.
+Features listed as out of scope below must not be added speculatively.
+
 ## Assets
 
 - Source code and workflow configuration.
