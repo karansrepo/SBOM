@@ -2,6 +2,26 @@
 
 This repository contains the Week 4 SupplyChainGuard implementation using a minimal Node.js HTTP service built on the standard library.
 
+## Project overview
+
+SupplyChainGuard is a focused software supply-chain security demonstration. It
+builds a container image, generates an SPDX software bill of materials (SBOM),
+scans the image for vulnerabilities, and publishes the image only when the
+scan passes. Successful images are signed with Sigstore Cosign and receive a
+signed Grype attestation so that a Kyverno admission policy can verify the
+image before it runs in Kubernetes.
+
+The project also includes a small PostgreSQL loader and local dashboard for
+reviewing build metadata, SBOM components, vulnerabilities, and signature
+verification results. The implementation is intentionally small: it
+demonstrates the security workflow without attempting to be a complete
+production platform. See [USE_CASE.md](USE_CASE.md) for practical workflows
+and [FUTURE_ADDITIONS.md](FUTURE_ADDITIONS.md) for deliberately scoped
+extension ideas.
+
+For a single setup and verification path, see
+[SETUP.md](SETUP.md).
+
 ## What is included
 - A tiny HTTP service exposing a health endpoint and a default landing response.
 - A GitHub Actions workflow that builds the image locally, generates and uploads an SPDX SBOM, scans it for critical vulnerabilities into a JSON report, pushes it to GHCR only if the scan passes, and signs and attests the pushed digest with cosign keyless signing through GitHub OIDC.
